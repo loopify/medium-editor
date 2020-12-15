@@ -671,7 +671,7 @@ npm install
 
 To run all the test and build the dist files for testing on demo pages, just invoke:
 ```bash
-grunt
+node node_modules/grunt-cli/bin/grunt
 ```
 
 These are the other available grunt tasks:

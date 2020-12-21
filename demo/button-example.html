@@ -15,14 +15,16 @@
 		<h1>Medium Editor</h1>
 		Broken:
 		<p class="editable">
-			My father’s family name is
-			<p><br></p>
-			<p>Test</p>
+			To break after last word press enter twice, add a new word, select it. If you then highlight and try to unhighlight, the selection starts from the begining of the whole element.
+			<!-- <p><br></p>
+			<p>Test</p> -->
 		</p>
 
 		Works:
 		<div class="editable">
 			My father’s family name is
+			<p><br></p>
+			<p>Test</p>
 			<p><br></p>
 			<p>Test</p>
 		</div>
@@ -69,55 +71,13 @@
 			}
 		});
 
-		const StrongButton = MediumEditor.extensions.button.extend({
-			name: 'strong',
-			tagNames: ['strong'],
-			contentDefault: '<b>B</b>',
-			aria: 'Bold',
-			action: 'bold',
-			init: function () {
-				MediumEditor.extensions.button.prototype.init.call(this);
-
-				this.classApplier = rangy.createClassApplier('strong', {
-					elementTagName: 'strong',
-					normalize: true,
-					onElementCreate: function (elem) {}
-				});
-			},
-			handleClick: function (event) {
-				this.classApplier.toggleSelection();
-
-				if (!this.classApplier.isAppliedToSelection()) {
-					this.base.saveSelection();
-
-					const range = MediumEditor.selection.getSelectionRange(this.document);
-					const documentFragment = range.cloneContents();
-
-					var matches = documentFragment.querySelectorAll('strong.variable');
-
-					for (var i = 0; i < matches.length; i++) {
-						let matchParentElem = matches[i].parentElement || documentFragment;
-						matchParentElem.insertBefore(matches[i].firstChild, matches[i]);
-						matchParentElem.removeChild(matches[i]);
-					}
-
-					range.extractContents();
-					range.insertNode(documentFragment);
-					this.base.restoreSelection();
-				}
-
-				this.base.checkContentChanged();
-			}
-		});
-
 		var editor = new MediumEditor('.editable', {
 			toolbar: {
-				buttons: ['bold', 'italic', 'underline', 'highlighter', 'strong']
+				buttons: ['bold', 'italic', 'underline', 'highlighter']
 			},
 			buttonLabels: 'fontawesome',
 			extensions: {
-				'highlighter': new HighlighterButton(),
-				'strong': new StrongButton()
+				'highlighter': new HighlighterButton()
 			}
 		});
 	</script>

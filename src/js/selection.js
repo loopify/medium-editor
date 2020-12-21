@@ -139,7 +139,7 @@
                 if (node.nodeType === 3 && !foundEnd) {
                     nextCharIndex = charIndex + node.length;
                     // Check if we're at or beyond the start of the selection we're importing
-                    if ((!foundStart || (foundStart && typeof selectionState.emptyBlocksIndex !== 'undefined')) && selectionState.start >= charIndex && selectionState.start <= nextCharIndex) {
+                    if (!foundStart && selectionState.start >= charIndex && selectionState.start <= nextCharIndex) {
                         // NOTE: We only want to allow a selection to start at the END of an element if
                         //  allowRangeToStartAtEndOfNode is true
                         if (allowRangeToStartAtEndOfNode || selectionState.start < nextCharIndex) {

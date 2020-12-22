@@ -188,7 +188,7 @@ describe('MediumEditor.selection TestCase', function () {
             MediumEditor.selection.select(document, lastTextNode, 0, lastTextNode, 'not a link'.length);
 
             var exportedSelection = MediumEditor.selection.exportSelection(this.el, document);
-            expect(exportedSelection).toEqual({ start: 15, end: 24, emptyBlocksIndex: 2 });
+            expect(exportedSelection).toEqual({ start: 14, end: 24, emptyBlocksIndex: 2 });
             MediumEditor.selection.importSelection(exportedSelection, this.el, document);
 
             var range = window.getSelection().getRangeAt(0);

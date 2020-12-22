@@ -1916,7 +1916,6 @@ MediumEditor.extensions = {};
                 if (start !== 0) {
                     var emptyBlocksIndex = this.getIndexRelativeToAdjacentEmptyBlocks(doc, root, range.startContainer, range.startOffset);
                     if (emptyBlocksIndex !== -1) {
-                        selectionState.start += 1;
                         selectionState.emptyBlocksIndex = emptyBlocksIndex;
                     }
                 }

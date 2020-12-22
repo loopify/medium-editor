@@ -222,9 +222,9 @@
                 return node.nodeName.toLowerCase() === 'a';
             };
             if (selectionState.start === selectionState.end &&
-                    range.startContainer.nodeType === 3 &&
-                    range.startOffset === range.startContainer.nodeValue.length &&
-                    MediumEditor.util.traverseUp(range.startContainer, nodeInsideAnchorTagFunction)) {
+                range.startContainer.nodeType === 3 &&
+                range.startOffset === range.startContainer.nodeValue.length &&
+                MediumEditor.util.traverseUp(range.startContainer, nodeInsideAnchorTagFunction)) {
                 var prevNode = range.startContainer,
                     currentNode = range.startContainer.parentNode;
                 while (currentNode !== null && currentNode.nodeName.toLowerCase() !== 'a') {
@@ -266,6 +266,40 @@
             if (startContainer.nodeType === 3 && MediumEditor.util.isBlockContainer(startContainer.previousSibling)) {
                 startBlock = startContainer.previousSibling;
             } else {
+                if (startContainer.nodeType === 3 && MediumEditor.util.getClosestBlockContainer(startContainer) === root) {
+                    if (startContainer.previousSibling == null) {
+                        var p = document.createElement('p');
+                        p.innerHTML = startContainer.textContent;
+                        startContainer.replaceWith(p);
+                        startContainer = p;
+                    } else {
+                        // There's multiple text nodes before startContainer that should be warpped in a single paragraph. (strong, variable, anchor and so on)
+                        var backTextNode = startContainer,
+                         oldStartContainer,
+                         newWrapper = document.createElement('p');
+
+                        while (backTextNode != null && !MediumEditor.util.isBlockContainer(backTextNode) && !MediumEditor.util.isMediumEditorElement(backTextNode)) {
+                            var clone = backTextNode.cloneNode(true);
+
+                            newWrapper.insertBefore(clone, newWrapper.firstChild);
+                            if (backTextNode.previousSibling == null || MediumEditor.util.isBlockContainer(backTextNode.previousSibling) || MediumEditor.util.isMediumEditorElement(backTextNode.previousSibling)) {
+                                root.insertBefore(newWrapper, backTextNode);
+                            }
+
+                            backTextNode = backTextNode.previousSibling;
+                        }
+
+                        oldStartContainer = startContainer;
+                        startContainer = newWrapper;
+
+                        while (newWrapper.nextSibling && newWrapper.nextSibling !== oldStartContainer) {
+                            newWrapper.nextSibling.remove();
+                        }
+
+                        oldStartContainer.remove();
+                    }
+                }
+
                 startBlock = MediumEditor.util.getClosestBlockContainer(startContainer);
             }
 

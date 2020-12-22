@@ -133,10 +133,10 @@ describe('Core-API', function () {
             this.el.innerHTML = 'lorem <i>ipsum</i> dolor';
 
             var editor = this.newMediumEditor('.editor', {
-                    toolbar: {
-                        buttons: ['italic', 'underline', 'strikethrough']
-                    }
-                }),
+                toolbar: {
+                    buttons: ['italic', 'underline', 'strikethrough']
+                }
+            }),
                 toolbar = editor.getExtensionByName('toolbar'),
                 button,
                 // Beacuse not all browsers use <strike> or <s>, check for both
@@ -165,6 +165,48 @@ describe('Core-API', function () {
             button = toolbar.getToolbarElement().querySelector('[data-action="strikethrough"]');
             fireEvent(button, 'click');
             expect(editor.elements[0].innerHTML).toMatch(regex);
+        });
+
+        it('should wrap loose nodes and import a selection after an empty paragraph', function () {
+            this.brokenEl = this.createElement('p', 'beditor', 'www.google.com');
+            this.brokenEl.innerHTML = 'www.<strong>google</strong>.com<p><br></p><p class="whatev">Whatever</p>';
+
+            var editor = this.newMediumEditor('.beditor');
+
+            // Select the Whatever text, which has break lines before it, and loose nodes before the break lines
+            selectElementContents(editor.elements[0].querySelector('.whatev').childNodes[0]);
+            editor.saveSelection();
+
+            expect(JSON.stringify(editor.selectionState)).toEqual(JSON.stringify({
+                'start': 14,
+                'end': 22,
+                'emptyBlocksIndex': 2
+            }));
+
+            editor.restoreSelection();
+            // When the selection is restored, expect the loose nodes to be wrapped in <p></p>
+            expect(editor.elements[0].innerHTML).toEqual('<p>www.<strong>google</strong>.com</p><p><br></p><p class="whatev">Whatever</p>');
+        });
+
+        it('should wrap loose nodes after a block element and import a selection after an empty paragraph', function () {
+            this.brokenEl = this.createElement('p', 'beditor', 'www.google.com');
+            this.brokenEl.innerHTML = '<p>Block Element</p>www.<strong>google</strong>.com<p><br></p><p class="whatev">Whatever</p>';
+
+            var editor = this.newMediumEditor('.beditor');
+
+            // Select the Whatever text, which has break lines before it, and loose nodes before the break lines
+            selectElementContents(editor.elements[0].querySelector('.whatev').childNodes[0]);
+            editor.saveSelection();
+
+            expect(JSON.stringify(editor.selectionState)).toEqual(JSON.stringify({
+                'start': 27,
+                'end': 35,
+                'emptyBlocksIndex': 2
+            }));
+
+            editor.restoreSelection();
+            // When the selection is restored, expect the loose nodes to be wrapped in <p></p>
+            expect(editor.elements[0].innerHTML).toEqual('<p>Block Element</p><p>www.<strong>google</strong>.com</p><p><br></p><p class="whatev">Whatever</p>');
         });
     });
 
@@ -293,10 +335,10 @@ describe('Core-API', function () {
     describe('checkContentChanged', function () {
         it('should trigger editableInput when called after the html has changed', function () {
             var editor = this.newMediumEditor('.editor', {
-                    toolbar: {
-                        buttons: ['italic', 'underline', 'strikethrough']
-                    }
-                }),
+                toolbar: {
+                    buttons: ['italic', 'underline', 'strikethrough']
+                }
+            }),
                 spy = jasmine.createSpy('handler');
 
             editor.subscribe('editableInput', spy);
@@ -315,10 +357,10 @@ describe('Core-API', function () {
 
         it('should not trigger editableInput when called after the html has not changed', function () {
             var editor = this.newMediumEditor('.editor', {
-                    toolbar: {
-                        buttons: ['italic', 'underline', 'strikethrough']
-                    }
-                }),
+                toolbar: {
+                    buttons: ['italic', 'underline', 'strikethrough']
+                }
+            }),
                 spy = jasmine.createSpy('handler');
 
             editor.subscribe('editableInput', spy);
